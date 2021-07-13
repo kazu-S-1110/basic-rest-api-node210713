@@ -27,6 +27,17 @@ app.get("/api/v1/users/:id", (req, res) => {  //:idとすることでexpressで�
   db.close() 
 })
 
+//Search users matching keyword
+app.get("/api/v1/search", (req, res) => {  //:idとすることでexpressでは動的に扱える。
+  const db = new sqlite3.Database(dbPath)
+  const keyword = req.query.q
+  
+  db.all(`SELECT * FROM users WHERE name LIKE "%${keyword}%"`, (err, rows) => {
+    res.json(rows)
+  })
+  db.close() 
+})
+
 
 const port = process.env.PORT || 3000
 app.listen(port)
