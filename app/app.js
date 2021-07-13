@@ -3,7 +3,13 @@ const app = express()
 const sqlite3 = require("sqlite3")
 const path = require('path');
 const dbPath = "app/db/database.sqlite3"
+const bodyParser = require('body-parser');
 
+//リクエストのbodyをパースするよう定義
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json())
+
+//publicディレクトリを静的ファイルのルートディレクトリとして定義。
 app.use(express.static(path.join(__dirname, "public")))
 // app.get("/api/v1/hello", (req, res) => {
 //   res.json({"message": "Hello, World!"})
@@ -39,6 +45,8 @@ app.get("/api/v1/search", (req, res) => {  //:idとすることでexpressでは�
   })
   db.close() 
 })
+
+
 
 
 const port = process.env.PORT || 3000
