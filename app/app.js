@@ -92,6 +92,19 @@ app.put("/api/v1/users/:id", async (req, res) => {
   db.close()
 })
 
+// delete user date
+app.delete("/api/v1/users/:id", async (req, res) => {
+  const db = new sqlite3.Database(dbPath)
+  const id = req.params.id
+
+    
+  await run(
+    `DELETE FROM users WHERE id=${id}`, db, res, "Delete user data"
+    )
+  
+  db.close()
+})
+
 
 const port = process.env.PORT || 3000
 app.listen(port)
