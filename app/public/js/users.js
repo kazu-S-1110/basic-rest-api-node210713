@@ -46,8 +46,47 @@ const usersModule = (() => {
 
       alert(resJson.message)
       window.location.href ="/"
-    }
+    },
 
+
+    saveUser : async (uid) => {
+      const name = document.getElementById("name").value
+      const profile = document.getElementById("profile").value
+      const dateOfBirth = document.getElementById("date-of-birth").value
+
+      //リクエストのボディを作る
+      const body = {
+        name: name,
+        profile: profile,
+        date_of_birth: dateOfBirth
+      }
+      const res = await fetch(BASE_URL + "/" + uid, {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify(body) //json形式で渡すためにstringifyを使用
+      })
+
+      const resJson = await res.json()
+
+      alert(resJson.message)
+      window.location.href ="/"
+    },
+
+    deleteUser: async (uid) => {
+      const ret = window.confirm("this user delete , really?")
+
+      if (!ret) {
+        return false
+      } else {
+        const res = await fetch(BASE_URL + "/" + uid, {
+          method: "DELETE",
+          headers: headers,
+        })
+        const resJson = await res.json()
+        alert(resJson.message)
+        window.location.href = "/"
+      }
+    }
 
   }
 })()
