@@ -46,6 +46,22 @@ app.get("/api/v1/search", (req, res) => {  //:idとすることでexpressでは�
   db.close() 
 })
 
+
+const run = async (sql,db, res,message) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, (err) => {
+      if (err) {
+        res.status(500).send(err)
+        return reject()
+      } else {
+        res.json({ message: message })
+        return resolve()
+      }
+    })
+  })
+}
+
+
 // Create a new user
 app.post("/api/v1/users", async (req, res) => {
   const db = new sqlite3.Database(dbPath)
@@ -54,24 +70,27 @@ app.post("/api/v1/users", async (req, res) => {
   const profile = req.body.profile ? req.body.profile : ""
   const dateOfBirth = req.body.date_of_birth ? req.body.date_of_birth : ""
 
-  const run = async (sql) => {
-    return new Promise((resolve, reject) => {
-      db.run(sql, (err) => {
-        if (err) {
-          res.status(500).send(err)
-          return reject()
-        } else {
-          res.json({ "message": "Success create user!" })
-          return resolve()
-        }
-      })
-    })
-  }
-  await run(`INSERT INTO users (name, profile, date_of_birth) VALUES ("${name}", "${profile}", "${dateOfBirth}")`)
+  await run(`INSERT INTO users (name, profile, date_of_birth) VALUES ("${name}", "${profile}", "${dateOfBirth}")`,db,res,"Success create user!")
   db.close()
 })
 
+// update user date
+app.put("/api/v1/users/:id", async (req, res) => {
+  const db = new sqlite3.Database(dbPath)
+  const id = req.params.id
 
+  //現在のユーザ情報を取得する
+  db.get(`SELECT * FROM users WHERE id=${id}`, async(err, row) => {
+    const name = req.body.name ? req.body.name : row.name
+    const profile = req.body.profile ? req.body.profile : row.profile
+    const dateOfBirth = req.body.date_of_birth ? req.body.date_of_birth : row.date_of_birth
+    
+    await run(
+      `UPDATE users SET name="${name}", profile="${profile}", date_of_birth="${dateOfBirth}" WHERE id=${id}`, db, res, "Update user"
+    )
+  })
+  db.close()
+})
 
 
 const port = process.env.PORT || 3000
