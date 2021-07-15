@@ -30,7 +30,12 @@ app.get("/api/v1/users/:id", (req, res) => {  //:idとすることでexpressで�
   const id = req.params.id //こうすることで投げたクエリの文のidを取得できる。
 
   db.get(`SELECT * FROM users WHERE id = ${id}`, (err, row) => {
-    res.json(row)
+    if (!row) {
+      res.status(404).send({error:"Not Found!inaiyo~"})
+    } else {
+      res.status(200).json(row)
+      
+    }
   })
   db.close() 
 })
