@@ -7,6 +7,35 @@ const usersModule = (() => {
   headers.set("Content-Type", "application/json")
 
 
+  const handleError = async(res) => {
+    const resJson = await res.json()
+    switch (res.status) {
+      case 200:
+        alert(resJson.message)
+        window.location.href = "/"
+        break;
+      case 201:
+        alert(resJson.message)
+        window.location.href = "/"
+        break;
+      case 400:
+        alert(resJson.error)
+        break;
+      case 404:
+        alert(resJson.error)
+        break;
+      case 500:
+        alert(resJson.error)
+        break;
+      default:
+        alert("なんらかのエラーが発生しました。")
+        break;
+    }
+
+  }
+  
+
+
   return {
     fetchAllUsers: async () => {
       const res = await fetch(BASE_URL)
@@ -26,6 +55,7 @@ const usersModule = (() => {
         document.getElementById('users-list').insertAdjacentHTML('beforeend', body)
       }
     },
+
     createUser : async () => {
       const name = document.getElementById("name").value
       const profile = document.getElementById("profile").value
@@ -42,15 +72,10 @@ const usersModule = (() => {
         headers: headers,
         body: JSON.stringify(body) //json形式で渡すためにstringifyを使用
       })
-
-      const resJson = await res.json()
-
-      alert(resJson.message)
-      window.location.href ="/"
+      return handleError(res)
     },
 
-
-    saveUser : async (uid) => {
+    saveUser: async (uid) => {
       const name = document.getElementById("name").value
       const profile = document.getElementById("profile").value
       const dateOfBirth = document.getElementById("date-of-birth").value
@@ -66,21 +91,17 @@ const usersModule = (() => {
         headers: headers,
         body: JSON.stringify(body) //json形式で渡すためにstringifyを使用
       })
-
-      const resJson = await res.json()
-
-      alert(resJson.message)
-      window.location.href ="/"
+      return handleError(res)
     },
+
     setExistingValue: async (uid) => {
       const res = await fetch(BASE_URL + "/" + uid)
       const resJson = await res.json()
       document.getElementById("name").value = resJson.name
       document.getElementById("profile").value = resJson.profile
       document.getElementById("date-of-birth").value = resJson.date_of_birth
+      
     },
-
-
 
     deleteUser: async (uid) => {
       const ret = window.confirm("this user delete , really?")
@@ -92,9 +113,8 @@ const usersModule = (() => {
           method: "DELETE",
           headers: headers,
         })
-        const resJson = await res.json()
-        alert(resJson.message)
-        window.location.href = "/"
+        return handleError(res)
+
       }
     }
 
