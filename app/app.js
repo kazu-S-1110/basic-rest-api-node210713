@@ -24,6 +24,25 @@ app.get("/api/v1/users", (req, res) => {
   db.close() 
 })
 
+
+//Get following users
+app.get("/api/v1/users/:id/following", (req, res) => {
+  const db = new sqlite3.Database(dbPath) //DBへ接続。
+  const id = req.params.id
+  db.all(/*sql*/ `SELECT * FROM following LEFT JOIN users ON following.followed_id = users.id WHERE following_id = ${id};`,
+  (err, rows) => { //クエリ結果受け取る。エラーならerr,正常なら全てがrowsに入る。
+    if (!rows) {
+      res.status(404).send({error:"Not Found!"})
+    } else {
+      res.status(200).json(rows)
+    }
+    })
+  
+  db.close() 
+})
+
+
+
 //Get a user
 app.get("/api/v1/users/:id", (req, res) => {  //:idとすることでexpressでは動的に扱える。
   const db = new sqlite3.Database(dbPath)
